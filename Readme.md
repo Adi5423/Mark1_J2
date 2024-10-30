@@ -30,8 +30,12 @@ cd Mark1_J2
 2. *Create a virtual environment (optional but recommended):*
 ```bash
 python -m venv venv
-.venv\Scripts\activate # Activate the Virtual Environment.
 ```
+2.1.  *Activate the virtual environment:*
+```bash
+.venv\Scripts\activate 
+```
+
 ```bash
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
