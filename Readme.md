@@ -1,6 +1,6 @@
 # <span style="color: #4CAF50;">Jarvis CV</span>
 
-Jarvis CV is an advanced AI assistant that utilizes computer vision and voice recognition to perform various tasks. It can control applications, manage reminders, provide weather updates, and even switch browser tabs using hand gestures. This project combines the power of OpenCV, MediaPipe, and speech recognition to create a seamless user experience.
+Jarvis J2 Mark1 CV is an advanced AI assistant that utilizes computer vision and voice recognition to perform various tasks. It can control applications, manage reminders, provide weather updates, and even switch browser tabs using hand gestures. This project combines the power of OpenCV, MediaPipe, and speech recognition to create a seamless user experience.
 
 ## <span style="color: #2196F3;">Features</span>
 
@@ -19,7 +19,7 @@ To run this project, you need to have Python installed on your system. Follow th
 
 1. **Clone the repository**:
 ```bash
-   git clone https://github.com/yourusername/Jarvis-CV.git
+   git clone https://github.com/Adi5423/Mark1_J2.git
    cd Mark1_J2
 ```
 
@@ -30,7 +30,7 @@ python -m venv venv
 ```bash
 source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ```
-3. ***Install the required packages: Create a requirements.txt file with the following content:***
+3. ***Install the required packages: Create a requirements.txt file with the following content:*** (not updated, use "requirements.txt")
 
 ```plaintext
     opencv-python
@@ -74,4 +74,4 @@ Open a pull request.
 # About Me
 
 
-Thank you for checking out Jarvis CV! I hope you find it useful. [ adii54ti23@gmail.com ]
+Thank you for checking out Jarvis CV! I hope you find it useful. [adii54ti23@gmail.com]
