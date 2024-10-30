@@ -872,7 +872,7 @@ def main():
                     print("According to Wikipedia, " + results)
                     speakPTX("According to Wikipedia, " + results)
 
-                elif "time" in query or ("time" in query and "now" in query) or  ("time" in query and "current" in query):
+                elif "time" in query and ("current" in query or "now" in query):
                     current_time = datetime.now().strftime("%H:%M")
                     speakPTX(f"The current time is {current_time}")
 
@@ -934,7 +934,7 @@ def main():
                     Notepad()
                 elif "capablity" in query or "capablities" in query or ("what" in query and "can" in query and "you" in query and "do" in query):
                     speakPTX("There's a lot of things i can do. List on your screen ")
-                    print(capablity)
+                    print(capabilities)
                 
                 elif "copied" in query or "copy" in query:
                     speakPTX("Sir please you want to copy something or paste something ? Or should i save your copied text to dot txt file.")
@@ -1124,7 +1124,7 @@ def main():
                     sys.exit()
                     
                 elif "turbo" in query and ("turn" in query or "activate" in query) and ("on" in query or "enable" in query) and "mode" in query:
-                    global TURBO
+                    # global TURBO
                     TURBO = True
                     speakPTX("Turbo Mode Activated now")
                     print("TURBO Mode Status Online :")
