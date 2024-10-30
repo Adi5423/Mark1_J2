@@ -1,0 +1,34 @@
+.   1. Web Browsing Automation:
+- Open YouTube/Google: Quickly open YouTube or Google via voice commands.
+- Search on YouTube/Google: Perform searches, like "Search for tech tutorials."
+- Scrolling: Scroll web pages up/down with "Scroll down" or "Scroll up" commands.
+- Tab Management: "Open new tab", "Close tab", and "Switch tab" for easy browsing.
+- Ek command mein multiple tasks perform karna (e.g. "Open YouTube, search, play video").
+
+.	2.File Management:
+- Create Folder: "Create a folder called 'Work Projects'."
+- Rename Files/Folders: "Rename previous folder to 'Project Usman'."
+- Create Files: "Create a text file named 'Notes'."
+- Save and Organize: "Save notes as 'meeting_notes.txt' in Work folder."
+.	3.Note-Taking:
+- Open Notepad: Quickly open notepad
+- Write Notes: "Write: may god bless you Aditya its my notes."
+- Save Notes: "Save notes as 'DailyPlan'.
+4. Media Control:
+- Play/Pause Music or Videos: "Play the next song" or "Pause the video."
+- Volume Control: "Increase or decrease volume 'value'" or "Mute sound".
+5. Email and Calender:
+- Check Emails: "Open email and check new messages."
+- Set Reminders: "Remind me about the meeting at 2 PM tomorrow."
+6. System Operations:
+- Open Applications: "Open Microsoft Word" or "Open Calculator."
+- Shut Down/Restart Computer: "Shut down the system."
+- System Status Check: "What's the CPU usage right now?"
+7. Weather and Time: 
+- Check Weather: "What's the weather today?"
+- Get Time: "What time is it?"
+8. Search information Quick:
+- Quick Answers: "What's the latest tech news?" or "Define mechatronics."
+- Translate Text: "Translate 'hello' into Spanish."
+
+
