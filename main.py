@@ -745,21 +745,23 @@ def Vision():
     cv2.destroyAllWindows()
 
 class KnowledgeBase:
-    def __init__(self, filename):
-        self.filename = filename
-        self.data = self.load_data()
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.data = []
+        self.load_data()
 
     def load_data(self):
-        try:
-            with open(self.filename, 'rb') as file:
-                return pickle.load(file)
-        except FileNotFoundError:
-            return []
-
-    def save_data(self):
-        with open(self.filename, 'wb') as file:
-            pickle.dump(self.data, file)
-
+        """Load data from the pickle file."""
+        if os.path.exists(self.file_path):
+            try:
+                with open(self.file_path, 'rb') as file:
+                    self.data = pickle.load(file)
+                    print("Data loaded successfully.")
+            except (EOFError, pickle.UnpicklingError) as e:
+                print(f"Error loading data: {e}")
+        else:
+            print(f"File '{self.file_path}' does not exist. Starting with an empty knowledge base.")
+    
     def learn(self, original_info, ai_modified):
         entry = {
             'original': original_info,
@@ -769,59 +771,40 @@ class KnowledgeBase:
         self.data.append(entry)
         self.save_data()
         return f"I've learned and stored this information.\nOriginal: {original_info}\nAI Modified: {ai_modified}"
-
-    def recall(self, query):
-        relevant_info = []
-        for entry in self.data:
-            if query.lower() in entry['original'].lower() or query.lower() in entry['ai_modified'].lower():
-                relevant_info.append(f"Original: {entry['original']}\nAI Modified: {entry['ai_modified']}\nTimestamp: {entry['timestamp']}\n")
-        
-        if relevant_info:
-            return "\n".join(relevant_info)
-        else:
-            return "I don't have any relevant information about that."
-
-    def search_by_date(self, month, date=None):
-        month = month.lower()
-        month_code = MONTHS_DICT.get(month)
-        if not month_code:
-            return "Invalid month name"
-
-        relevant_entries = []
-        date_str = f"-{date}" if date else ""
-        search_pattern = f"{month_code}{date_str}"
-
-        for entry in self.data:
-            entry_date = entry['timestamp'].split()[0]  # Get date part only
-            entry_month = entry_date.split('-')[1]  # Get month part
-            entry_day = entry_date.split('-')[2]  # Get day part
-            
-            if date:  # If specific date is provided
-                if entry_month == month_code and entry_day == str(date).zfill(2):
-                    return f"Original: {entry['original']}"
-            else:  # If only month is provided
-                if entry_month == month_code:
-                    relevant_entries.append(entry['original'])
-
-        if relevant_entries:
-            if len(relevant_entries) > 1:
-                return f"Found multiple entries for {month}. Here's the first one:\n{relevant_entries[0]}"
-            return f"Original: {relevant_entries[0]}"
-        
-        return f"No entries found for the specified {'date' if date else 'month'}"
-
-    def clear_all_data(self):
-        self.data = []
-        self.save_data()
-        return "All stored data has been cleared."
     
-    def delete_data_file(self):
-        """Deletes the data file if it exists."""
-        if os.path.exists(self.filename):
-            os.remove(self.filename)
-            return f"The data files has been deleted."
-        else:
-            return f"The data file does not exist."
+    def save_data(self):
+        """Save data to the pickle file."""
+        try:
+            with open(self.file_path, 'wb') as file:
+                pickle.dump(self.data, file)
+                print("Data saved successfully.")
+        except (IOError, PermissionError) as e:
+            print(f"Error saving data: {e}")
+
+    def add_entry(self, original, date):
+        """Add a new entry to the knowledge base."""
+        entry = {'original': original, 'date': date}
+        self.data.append(entry)
+        self.save_data()  # Save data after adding a new entry
+
+    def search_by_date(self, month):
+        """Search for entries by month."""
+        results = [entry for entry in self.data if datetime.strptime(entry['date'], "%Y-%m-%d").month == month]
+        return results
+
+    def get_all_entries(self):
+        """Return all entries in the knowledge base."""
+        return self.data
+
+    def clear_data(self):
+        """Clear all data from the knowledge base and delete the pickle file."""
+        self.data = []  # Clear the in-memory data
+        self.save_data()  # Save the empty data to the file
+        try:
+            os.remove(self.file_path)  # Delete the file
+            print(f"File '{self.file_path}' has been deleted.")
+        except OSError as e:
+            print(f"Error deleting file: {e}")
 
 def get_news():
     news_feeds = {
@@ -851,6 +834,45 @@ def get_news():
                 continue
 
     return news_items
+
+def dbs_search(kb, query):
+    """Search the knowledge base for the query."""
+    print("DEBUG: Entering else block - searching knowledge base")
+    
+    all_originals = [entry['original'] for entry in kb.get_all_entries()]
+    database_info = f"Total entries: {len(all_originals)}\nEntries: {' | '.join(all_originals)}"
+    
+    if len(all_originals) != 0:
+        print(f"DEBUG: Database info: {database_info}")
+
+        prompt = f"""
+        Query: "{query}"
+        Database: "{database_info}"
+        
+        Instructions:
+        1. Answer the query using only the information from the database.
+        2. If there's no related information, respond with "false".
+        3. Provide a concise, friendly answer without any extra information or data.
+        4. Do not include phrases like "Answer:" or "True" in your response.
+        5. Remove any asterisks (*) from your response.
+        Mandatory Instruction = If there's no fit answer for the query from the database just result false with no extra data included just false as response.
+        Again repeating no text, no extra data, no words except false in response if the query can't be answered.
+        """
+        
+        print("DEBUG: Generating Groq response")
+        response = GenerateGroq(prompt)
+        print(f"DEBUG: Raw Groq response: {response}")
+        if False in response:
+            return GenerateGroq(query)  # Return the response instead of printing it
+        else:
+            return response  # If there are no entries, return false
+    else:
+        return GenerateGroq(query)
+
+        # Clean up the response
+        response = response.replace("Answer:", "").replace("True", "").replace("*", "").strip()
+        print(f"DEBUG: Cleaned response: {response}")
+
 # Initialize the KnowledgeBase
 kb = KnowledgeBase('jarvis_knowledge.pkl')
 drives = get_drive_names()
@@ -861,7 +883,7 @@ def main():
     while True:
         query = takeCommand()
         query = query.lower()
-        if query == "None":
+        if query == None:
             continue
         else:
             try:
@@ -1128,84 +1150,25 @@ def main():
                     TURBO = True
                     speakPTX("Turbo Mode Activated now")
                     print("TURBO Mode Status Online :")
+                elif "turbo" in query and ("turn" in query or "deactivate" in query) and ("of" in query or "off" in query or "enable" in query) and "mode" in query:
+                    # global TURBO
+                    TURBO = False
+                    speakPTX("Turbo Mode Activated now")
+                    print("TURBO Mode Status Online :")
                 # If none of the above conditions are met, check the knowledge base
                 else:
-                    # First, get all original info from the database with count
-                    print("DEBUG: Entering else block - searching knowledge base")
-                    # Search the knowledge base
-                    all_originals = [entry['original'] for entry in kb.data]
-                    database_info = f"Total entries: {len(all_originals)}\nEntries: {' | '.join(all_originals)}"
-                    if len(all_originals) != 0:
-                        print(f"DEBUG: Database info: {database_info}")
-                        
-                        prompt = f"""
-                        Query: "{query}"
-                        Database: "{database_info}"
-                        
-                        Instructions:
-                        1. Answer the query using only the information from the database.
-                        2. If there's no related information, respond with "false".
-                        3. Provide a concise, friendly answer without any extra information or data.
-                        4. Do not include phrases like "Answer:" or "True" in your response.
-                        5. Remove any asterisks (*) from your response.
-                        Mandatory Intstruction = If there's no fit answer for the query from database just result false with no extra data included just false as response.
-                        Again repeating no text , no extra data , no words except false in response if the query cant be answered.
-                        """
-                        
-                        print("DEBUG: Generating Groq response")
-                        response = GenerateGroq(prompt)
-                        print(f"DEBUG: Raw Groq response: {response}")
-                        
-                        # Clean up the response
-                        response = response.replace("Answer:", "").replace("True", "").replace("*", "").strip()
-                        print(f"DEBUG: Cleaned response: {response}")
-                        
-                        if "false" in response.lower() :
-                            print("DEBUG: No information found in knowledge base, considering Turbo mode")
-                            if TURBO:
-                                try:
-                                    # turbo_query=speakPTXinput("The TURBO mode is not active should i activate it?")
-                                    # print("The TURBO mode is not active should i activate it?")
-                                    # if "no" not in turbo_query:
-                                    # print("DEBUG: Turbo mode active, generating response")
-                                    # turbo_response = GenerateGroq(query)
-                                    # print(f"DEBUG: Turbo response: {turbo_response}")
-                                    # speakPTX(turbo_response)
-                                    # speakPTX("Ok Sir.")
-                                    print("No data found in database.")
-                                    speakPTX("Activate the TURBO Mode for more reponses please.")
-                                    print("TURBO Status OFFLINE")
-                                    continue
-                                except Exception as e:
-                                    # print(f"DEBUG: Error in Turbo mode: {e}")
-                                    speakPTX("Sir, please check your API or internet connection for Turbo Mode features.")
-                            else:
-                                    # turbo_query=speakPTXinput("The TURBO mode is not active should i activate it?")
-                                    # print("The TURBO mode is not active should i activate it?")
-                                    # if "no" not in turbo_query:
-                                        print("DEBUG: Turbo mode active, generating response")
-                                        turbo_response = GenerateGroq(query)
-                                        print(f"DEBUG: Turbo response: {turbo_response}")
-                                        speakPTX(turbo_response)
-                                        speakPTX(turbo_response)
-                        else:
-                            print(f"DEBUG: Valid response from knowledge base: {response}")
-                            speakPTX(response)
+                    if TURBO:
+                        try:
+                                
+                            DataBSCheck = dbs_search(kb,query)
+                            print(f"DEBUG: Valid response from knowledge base: {DataBSCheck}")
+                            speakPTX(DataBSCheck)
+                            print(DataBSCheck)
+                        except Exception as e:
+                            speakPTX(GenerateGroq(query))
                     else:
-                        print("DEBUG: Turbo mode inactive, asking for activation")
-                        activate_turbo = speakPTXinput("Turbo mode is required for this query. Should i active the TURBO Mode").lower()
-                        if activate_turbo in ["yes", "y"]:
-                            TURBO = True
-                            try:
-                                print("DEBUG: Activating Turbo mode and generating response")
-                                turbo_response = GenerateGroq(query)
-                                print(f"DEBUG: Turbo response: {turbo_response}")
-                                speakPTX(turbo_response)
-                            except Exception as e:
-                                print(f"DEBUG: Error in Turbo mode: {e}")
-                                speakPTX("Failed to generate response in Turbo mode.")
-                        else:
-                            speakPTX("Okay no issues")
+                        speakPTX("Activate TURBO mode")
+                        
             except Exception as e:
                 print(e)
 
