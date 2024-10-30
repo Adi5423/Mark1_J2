@@ -20,7 +20,7 @@ To run this project, you need to have Python installed on your system. Follow th
 1. **Clone the repository**:
 ```bash
    git clone https://github.com/yourusername/Jarvis-CV.git
-   cd Jarvis-CV
+   cd Mark1_J2
 ```
 
 2. *Create a virtual environment (optional but recommended):*
@@ -74,4 +74,4 @@ Open a pull request.
 # About Me
 
 
-Thank you for checking out Jarvis CV! I hope you find it useful.
+Thank you for checking out Jarvis CV! I hope you find it useful. [ adii54ti23@gmail.com ]
