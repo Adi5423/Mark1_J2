@@ -932,6 +932,9 @@ def main():
 
                 elif "write" in query and "notepad" in query:
                     Notepad()
+                elif "capablity" in query or "capablities" in query or ("what" in query and "can" in query and "you" in query and "do" in query):
+                    speakPTX("There's a lot of things i can do. List on your screen ")
+                    print(capablity)
                 
                 elif "copied" in query or "copy" in query:
                     speakPTX("Sir please you want to copy something or paste something ? Or should i save your copied text to dot txt file.")
