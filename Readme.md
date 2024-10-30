@@ -19,8 +19,12 @@ To run this project, you need to have Python installed on your system. Follow th
 
 1. **Clone the repository**:
 ```bash
-   git clone https://github.com/Adi5423/Mark1_J2.git
-   cd Mark1_J2
+git clone https://github.com/Adi5423/Mark1_J2.git
+```
+1.1. *Current Directory to Project Cloned Directory:*
+
+```bash
+cd Mark1_J2
 ```
 
 2. *Create a virtual environment (optional but recommended):*
